@@ -9,7 +9,7 @@ var T = new Twit({
 
 
 
-var statusIDStore=[{id:'884282363504504832',name:'hello everyone'},{id:'884282127742672896',name:'world is wonderful'}]
+var statusIDStore=[{id:'884282363504504832',name:'hello everyone'},{id:'884282127742672896',name:'world is wonderful'}];
 var userIdStoreJson=[];
 function getRetweetersbyStatusID(){
     getNextStatusID(statusIDStore,0,function(){
@@ -40,7 +40,7 @@ function getNextRetweeter(status2,index,success){
 
      if(!error){
     
-        var status=getStatus(status2);
+        var status=getStatus2(status2);
         for(var i=0;i<data.ids.length;i++){
 
             var obj = status.userIds.filter(function ( obj ) 
@@ -69,7 +69,7 @@ function getNextRetweeter(status2,index,success){
       })
       
 }
-function getStatus(statusDetails)
+function getStatus2(statusDetails)
 {
    if(userIdStoreJson==null || userIdStoreJson.length==0)
    {

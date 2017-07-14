@@ -21,27 +21,32 @@ var T = new Twit({
 
 
 
-var userIdsJson=[{Id: "884282363504504832",name:'hello everyone', userIds:[{id:'142665380',isProcessed:false},{id:'3171530662',isProcessed:false},{id:'916232876',isProcessed:false}]},
-                 {Id: "884282127742672896",name:'god is great', userIds:[{id:'3305960346',isProcessed:false},{id:'3230298888',isProcessed:false}]}]
+var userIdStoreJson=[{Id: "884282363504504832",name:'hello everyone', userIds:[{userId:'142665380',isProcessed:false},{userId:'3171530662',isProcessed:false},{userId:'916232876',isProcessed:false}]},
+                 {Id: "884282127742672896",name:'god is great', userIds:[{userId:'3305960346',isProcessed:false},{userId:'3230298888',isProcessed:false}]}]
 
-var allUserDetailsJson=[]                 
-var finalJSON=[];
 
-getNextStatus(userIdsJson,0,function(){
-    console.log("status finished"+ userIdsJson)
+function getRetweetedUser(){
+
+    getNextStatus4(userIdStoreJson,0,function(){
+    console.log("status finished"+ userIdStoreJson)
 })
 
-function getNextStatus(usrJson,index,done){
+}
+
+setInterval(getRetweetedUser,4000);
+
+
+function getNextStatus4(usrJson,index,done){
 
     if(usrJson.length==index){
         done();
     }
     else{
          var statusdetails=usrJson[index];
-         var userdIDS=userIdsJson[index].userIds;
+         var userdIDS=userIdStoreJson[index].userIds;
          getNextUserId(statusdetails,0,function(){
          index++;
-         getNextStatus(usrJson,index,done)
+         getNextStatus4(usrJson,index,done)
         })
        }
 }
@@ -78,7 +83,7 @@ function getNextUserId(userDetails,userIndex,success){
 }
 
 function getUserByUserId(uDetail,success){
-    var uId=uDetail.userId.id;
+    var uId=uDetail.userId.userId;
     T.get('users/show', {user_id:uId},
         function(error, users, response)
         {
@@ -102,7 +107,7 @@ function getUserByUserId(uDetail,success){
 
         });
 
-//---------------------------------------------------------------------
+                //-------------------------------------------------------
         function doKafka(dataToKafka,addData)
           {
              
