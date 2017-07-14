@@ -9,7 +9,7 @@ var T = new Twit({
 
 
 
-var statusIDStore=['884282363504504832','884282127742672896','884282127742672896','884441090098679808','884409495761321984','884446696431788032','884292479515713536','882854491392942080','884451045736194049','884451113843412992'];
+var statusIDStore=[{id:'884282363504504832',name:'hello everyone'},{id:'884282127742672896',name:'world is wonderful'}]
 var userIdStoreJson=[];
 function getRetweetersbyStatusID(){
     getNextStatusID(statusIDStore,0,function(){
@@ -24,7 +24,7 @@ function getNextStatusID(stId,stindex,done){
         done();
     }
     else{
-        statusID=stId[stindex];
+        statusID=stId[stindex]
         console.log(statusID);
         getNextRetweeter(statusID,0,function(){
             stindex++;
@@ -34,19 +34,27 @@ function getNextStatusID(stId,stindex,done){
 
 }
 
-function getNextRetweeter(statusId,index,success){
-
+function getNextRetweeter(status2,index,success){
+    var statusId=status2.id;
     T.get('statuses/retweeters/ids', {id:statusId,count:5 },function(error, data, response){
 
      if(!error){
     
-        var status=getStatus(statusId,data);
+        var status=getStatus(status2);
         for(var i=0;i<data.ids.length;i++){
-            if(status.userIds.indexOf(data.ids[i])>-1){
+
+            var obj = status.userIds.filter(function ( obj ) 
+            {
+                return obj.userId === data.ids[i];
+            })[0];
+            if(obj){
                 console.log(data.ids[i]+" user already exist of status Id "+statusId);
             }
             else{
-                status.userIds.push(data.ids[i]);
+                var temp={};
+                temp.userId=data.ids[i];
+                temp.isProcessed=false;
+                status.userIds.push(temp);
                 console.log(data.ids[i]+" new user added")
             }
             
@@ -61,27 +69,29 @@ function getNextRetweeter(statusId,index,success){
       })
       
 }
-function getStatus(id,data)
+function getStatus(statusDetails)
 {
    if(userIdStoreJson==null || userIdStoreJson.length==0)
    {
        var status={};
-       status.Id=id;
+       status.Id=statusDetails.id;
+       status.name=statusDetails.name;
        status.userIds=[];
        userIdStoreJson.push(status);
        return status;
    }
    for(var i=0;i<userIdStoreJson.length;i++){
-       if(userIdStoreJson[i].Id==id){
+       if(userIdStoreJson[i].Id==statusDetails.id){
            
            return userIdStoreJson[i];
        }
    }
    for(var i=0;i<userIdStoreJson.length;i++){
 
-       if(userIdStoreJson[i].Id!=id){
+       if(userIdStoreJson[i].Id!=statusDetails.id){
            var status={};
-           status.Id=id;
+           status.Id=statusDetails.id;
+           status.name=statusDetails.name;
            status.userIds=[];
            userIdStoreJson.push(status);
            console.log("status id "+status.Id)

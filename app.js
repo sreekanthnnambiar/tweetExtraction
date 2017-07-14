@@ -17,7 +17,8 @@ function getTweetsByScreenName(){
 
 }
 
-setInterval(getTweetsByScreenName,4000)
+//setInterval(getTweetsByScreenName,4000)
+getTweetsByScreenName();
 
 
 function getNextScreenName(nameList,keyIndex,success){
@@ -52,12 +53,31 @@ function getNextStatus(key,index,done){
 
             for(var i=0;i<data.length;i++){
                 
+                 var sId=data[i].id_str;
+                // var status=getStatus(sId);
+
+
+                if(statusIDStore==null||statusIDStore.length==0){
+                    var statusArray=[];
+                    var status={};
+                    status.id='';
+                    statusArray.push(status);
+                  }
+                  else{
+                      var statusArray=statusIDStore;
+                  }
+
+                
+                var result = statusArray.map(function(a) {return a.id;});
+
                 var statusId=data[i].id_str;
-                if(statusIDStore.indexOf(statusId) > -1){
+                if(result.indexOf(sId) > -1){
                     console.log("already exist")
                 }
                 else{
-                    statusIDStore.push(statusId);
+                    status.id=sId;
+                    status.name=data[i].text
+                    statusIDStore.push(status);
                     console.log(data[i].user.name+"'s data added");
                 }
 
@@ -75,6 +95,30 @@ function getNextStatus(key,index,done){
       
 
 });
+
+}
+
+function getStatus(id){
+    if(statusIDStore==null||statusIDStore.length==0){
+        var status1={};
+        status1.id=id;
+        status1.name="";
+        return status1;
+    }
+    for(var i=0;i<statusIDStore.length;i++){
+       if(statusIDStore[i].Id==id){
+           
+           return statusIDStore[i];
+       }
+   }
+   for(var i=0;i<statusIDStore.length;i++){
+       if(statusIDStore[i].Id!=id){
+           var status1={};
+           status1.id=id;
+           status1.name="";
+           return status1;
+       }
+   }
 
 }
 
