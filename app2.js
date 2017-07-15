@@ -19,111 +19,22 @@ var T = new Twit({
   timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
 })
 
-var screenName=["HARDWELL"];var a=["twitApp123","virendersehwag","narendramodi"];
 var statusIDStore=[];
+var stream = T.stream('statuses/filter', {track: '#GST'})
+ 
+stream.on('tweet', function (tweet) {
+  var status={};
+  status.id=tweet.id_str;
+  status.name=tweet.text;
+  statusIDStore.push(status);
+  console.log(tweet.text+" added ")
+})
 
-function getTweetsByScreenName(){
-    getNextScreenName(screenName, 0,function(){
-    console.log("end of statuses"+statusIDStore)
-});
-
-}
-
-setInterval(getTweetsByScreenName,4000)
-//getTweetsByScreenName();
-
-
-function getNextScreenName(nameList,keyIndex,success){
-
-    if(nameList.length==keyIndex)
-    {
-        success();
-    }
-    else{
-         sn=nameList[keyIndex];
-    
-    getNextStatus(sn,0,function(){
-            keyIndex++;
-        getNextScreenName(nameList,keyIndex,success)
-        })
-
-    }
-   
-    
-}
-
-function getNextStatus(key,index,done){
-    var params={
-    screen_name:key,
-    count:2
-    }
-
-    T.get("statuses/user_timeline",params,function(err,data,response){
-
-    
-    if(!err){
-
-            for(var i=0;i<data.length;i++){
-                
-                 var sId=data[i].id_str;
-                 var status=getStatus(sId);
-                 var obj = statusIDStore.filter(function ( obj ) 
-                {
-                return obj.id === sId;
-                })[0];
-                if(obj){
-                console.log(sId+" already exist ");
-                }
-                else{
-                    status.id=sId;
-                    status.name=data[i].text
-                    statusIDStore.push(status);
-                    console.log(data[i].user.name+"'s data added");
-                }
-                
-            }
-            
-            done();
-            
-    }
-    else{
-        console.log(err)
-        done();
-        
-    }
-      
-
-});
-
-}
-
-function getStatus(id){
-    if(statusIDStore==null||statusIDStore.length==0){
-        var status1={};
-        status1.id='';
-        status1.name="";
-        return status1;
-    }
-    for(var i=0;i<statusIDStore.length;i++){
-       if(statusIDStore[i].id==id){
-           
-           return statusIDStore[i];
-       }
-   }
-   for(var i=0;i<statusIDStore.length;i++){
-       if(statusIDStore[i].id!=id){
-           var status1={};
-           status1.id='';
-           status1.name="";
-           return status1;
-       }
-   }
-
-}
-
-// --------------------end of extracting statusId-----------
-
-
+stream.on('error',function(err){
+  
+  console.log(err);
+})
+//-----------------------------------------end of getting status id-------------
 var userIdStoreJson=[];
 function getRetweetersbyStatusID(){
     getNextStatusID(statusIDStore,0,function(){
